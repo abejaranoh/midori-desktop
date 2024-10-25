@@ -89,11 +89,9 @@ class DatabaseFileManager final
 
   const nsAString& DatabaseFilePath() const { return mDatabaseFilePath; }
 
-  uint64_t DatabaseVersion() const { return mDatabaseVersion; }
+  uint64_t DatabaseVersion() const;
 
-  void UpdateDatabaseVersion(uint64_t aDatabaseVersion) {
-    mDatabaseVersion = aDatabaseVersion;
-  }
+  void UpdateDatabaseVersion(uint64_t aDatabaseVersion);
 
   IndexedDBCipherKeyManager& MutableCipherKeyManagerRef() const {
     MOZ_ASSERT(mIsInPrivateBrowsingMode);
