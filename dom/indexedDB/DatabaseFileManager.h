@@ -106,7 +106,8 @@ class DatabaseFileManager final
 
   bool Initialized() const { return mInitialized; }
 
-  nsresult Init(nsIFile* aDirectory, mozIStorageConnection& aConnection);
+  nsresult Init(nsIFile* aDirectory, const uint64_t aDatabaseVersion,
+                mozIStorageConnection& aConnection);
 
   [[nodiscard]] nsCOMPtr<nsIFile> GetDirectory();
 
