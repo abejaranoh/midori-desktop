@@ -14,8 +14,10 @@ EXPORTS += [
 EXPORTS.mozilla.dom += [
     "Geolocation.h",
     "GeolocationCoordinates.h",
+    "GeolocationIPCUtils.h",
     "GeolocationPosition.h",
     "GeolocationPositionError.h",
+    "GeolocationSystem.h",
 ]
 
 SOURCES += [
@@ -26,8 +28,19 @@ SOURCES += [
 ]
 
 UNIFIED_SOURCES += [
+    "GeolocationSystem.cpp",
     "MLSFallback.cpp",
 ]
+
+if CONFIG["OS_TARGET"] == "WINNT" and CONFIG["MOZ_BUILD_APP"] == "browser":
+    EXTRA_JS_MODULES += [
+        "GeolocationUIUtilsWin.sys.mjs",
+    ]
+    XPCOM_MANIFESTS += [
+        "components.conf",
+    ]
+    XPIDL_SOURCES += ["nsIGeolocationUIUtilsWin.idl"]
+    XPIDL_MODULE = "dom_geolocation"
 
 include("/ipc/chromium/chromium-config.mozbuild")
 
