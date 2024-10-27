@@ -211,6 +211,7 @@ bool ArrayBufferViewObject::initResizable(JSContext* cx,
     return false;
   }
 
+
   // Compute the actual byteLength and byteOffset for non-shared buffers.
   if (!isSharedMemory()) {
     computeResizableLengthAndByteOffset(bytesPerElement);
