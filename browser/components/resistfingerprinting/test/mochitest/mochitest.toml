@@ -34,3 +34,5 @@ support-files = ["../../../../../dom/events/test/pointerevents/mochitest_support
 
 ["test_speech_synthesis.html"]
 skip-if = ["verify"]
+
+["test_bug1885101_screenwindow_sizes.html"]

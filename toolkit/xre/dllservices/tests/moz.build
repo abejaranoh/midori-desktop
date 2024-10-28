@@ -10,7 +10,6 @@ GeckoCppUnitTests(
         "TestDllInterceptor",
         "TestIATPatcher",
         "TestMMPolicy",
-        "TestOleAut32Initialization",
     ],
     linkage=None,
 )

@@ -8129,14 +8129,8 @@ ClusterIterator::ClusterIterator(nsTextFrame* aTextFrame, int32_t aPosition,
   }
 
   mFrag = aTextFrame->TextFragment();
-
-  const uint32_t textOffset =
-      AssertedCast<uint32_t>(aTextFrame->GetContentOffset());
-  const uint32_t textLen =
-      AssertedCast<uint32_t>(aTextFrame->GetContentLength());
-
   // If we're in a password field, some characters may be masked.  In such
-  // case, we need to treat each masked character as a mask character since
+  // case, we need to treat each masked character is a mask character since
   // we shouldn't expose word boundary which is hidden by the masking.
   if (aTextFrame->GetContent() && mFrag->GetLength() > 0 &&
       aTextFrame->GetContent()->HasFlag(NS_MAYBE_MASKED) &&
@@ -8148,38 +8142,24 @@ ClusterIterator::ClusterIterator(nsTextFrame* aTextFrame, int32_t aPosition,
     // can be just AddRefed in `mMaskedFrag`.
     nsString maskedText;
     maskedText.SetCapacity(mFrag->GetLength());
-    // Note that aTextFrame may not cover the whole of mFrag (in cases with
-    // bidi continuations), so we cannot rely on its textrun (and associated
-    // styles) being available for the entire fragment.
-    uint32_t i = 0;
-    // Just copy any text that precedes what aTextFrame covers.
-    while (i < textOffset) {
-      maskedText.Append(mFrag->CharAt(i++));
-    }
-    // For the range covered by aTextFrame, mask chars if appropriate.
-    while (i < textOffset + textLen) {
-      uint32_t skippedOffset = mIterator.ConvertOriginalToSkipped(i);
-      bool mask =
-          skippedOffset < transformedTextRun->GetLength()
-              ? transformedTextRun->mStyles[skippedOffset]->mMaskPassword
-              : false;
+    for (uint32_t i = 0; i < mFrag->GetLength(); ++i) {
+      mIterator.SetOriginalOffset(i);
+      uint32_t skippedOffset = mIterator.GetSkippedOffset();
       if (mFrag->IsHighSurrogateFollowedByLowSurrogateAt(i)) {
-        if (mask) {
+        if (transformedTextRun->mStyles[skippedOffset]->mMaskPassword) {
           maskedText.Append(kPasswordMask);
           maskedText.Append(kPasswordMask);
         } else {
           maskedText.Append(mFrag->CharAt(i));
           maskedText.Append(mFrag->CharAt(i + 1));
         }
-        i += 2;
-      } else {
-        maskedText.Append(mask ? kPasswordMask : mFrag->CharAt(i));
         ++i;
+      } else {
+        maskedText.Append(
+            transformedTextRun->mStyles[skippedOffset]->mMaskPassword
+                ? kPasswordMask
+                : mFrag->CharAt(i));
       }
-    }
-    // Copy any trailing text from the fragment.
-    while (i < mFrag->GetLength()) {
-      maskedText.Append(mFrag->CharAt(i++));
     }
     mMaskedFrag.SetTo(maskedText, mFrag->IsBidi(), true);
     mFrag = &mMaskedFrag;
@@ -8190,6 +8170,11 @@ ClusterIterator::ClusterIterator(nsTextFrame* aTextFrame, int32_t aPosition,
       mFrag, aTrimSpaces ? nsTextFrame::TrimmedOffsetFlags::Default
                          : nsTextFrame::TrimmedOffsetFlags::NoTrimAfter |
                                nsTextFrame::TrimmedOffsetFlags::NoTrimBefore);
+
+  const uint32_t textOffset =
+      AssertedCast<uint32_t>(aTextFrame->GetContentOffset());
+  const uint32_t textLen =
+      AssertedCast<uint32_t>(aTextFrame->GetContentLength());
 
   // Allocate an extra element to record the word break at the end of the line
   // or text run in mWordBreak[textLen].

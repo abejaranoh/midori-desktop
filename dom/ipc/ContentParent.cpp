@@ -8243,24 +8243,6 @@ IPCResult ContentParent::RecvGetSystemIcon(nsIURI* aURI,
 #endif
 }
 
-IPCResult ContentParent::RecvGetSystemGeolocationPermissionBehavior(
-    GetSystemGeolocationPermissionBehaviorResolver&& aResolver) {
-  aResolver(Geolocation::GetLocationOSPermission());
-  return IPC_OK();
-}
-IPCResult ContentParent::RecvRequestGeolocationPermissionFromUser(
-    const MaybeDiscardedBrowsingContext& aBrowsingContext,
-    RequestGeolocationPermissionFromUserResolver&& aResolver) {
-  if (MOZ_UNLIKELY(aBrowsingContext.IsNullOrDiscarded())) {
-    aResolver(GeolocationPermissionStatus::Error);
-    return IPC_OK();
-  }
-  RefPtr<BrowsingContext> browsingContext = aBrowsingContext.get();
-  Geolocation::ReallowWithSystemPermissionOrCancel(browsingContext,
-                                                   std::move(aResolver));
-  return IPC_OK();
-}
-
 #ifdef FUZZING_SNAPSHOT
 IPCResult ContentParent::RecvSignalFuzzingReady() {
   // No action needed here, we already observe this message directly

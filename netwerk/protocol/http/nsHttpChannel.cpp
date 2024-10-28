@@ -130,9 +130,6 @@
 #ifdef XP_WIN
 #  include "HttpWinUtils.h"
 #endif
-#ifdef XP_MACOSX
-#  include "MicrosoftEntraSSOUtils.h"
-#endif
 #ifdef FUZZING
 #  include "mozilla/StaticPrefs_fuzzing.h"
 #endif
@@ -426,23 +423,14 @@ nsresult nsHttpChannel::PrepareToConnect() {
 
   AddCookiesToRequest();
 
-#if defined(XP_WIN) || defined(XP_MACOSX)
+#ifdef XP_WIN
 
   auto prefEnabledForCurrentContainer = [&]() {
     uint32_t containerId = mLoadInfo->GetOriginAttributes().mUserContextId;
     // Make sure that the default container ID is 0
     static_assert(nsIScriptSecurityManager::DEFAULT_USER_CONTEXT_ID == 0);
-
-    nsAutoCString prefName;
-#  ifdef XP_WIN
-    prefName = nsPrintfCString("network.http.windows-sso.container-enabled.%u",
-                               containerId);
-#  endif
-
-#  ifdef XP_MACOSX
-    prefName = nsPrintfCString(
-        "network.http.microsoft-entra-sso.container-enabled.%u", containerId);
-#  endif
+    nsPrintfCString prefName("network.http.windows-sso.container-enabled.%u",
+                             containerId);
 
     bool enabled = false;
     Preferences::GetBool(prefName.get(), &enabled);
@@ -452,13 +440,9 @@ nsresult nsHttpChannel::PrepareToConnect() {
     return enabled;
   };
 
-#endif  // defined(XP_WIN) || defined(XP_MACOSX)
-
-#ifdef XP_WIN
-
-  // If Windows 10 SSO is enabled, we potentially add auth
-  // information to secure top level loads (DOCUMENTs) and iframes
-  // (SUBDOCUMENTs) that aren't anonymous or private browsing.
+  // If Windows 10 SSO is enabled, we potentially add auth information to
+  // secure top level loads (DOCUMENTs) and iframes (SUBDOCUMENTs) that
+  // aren't anonymous or private browsing.
   if (StaticPrefs::network_http_windows_sso_enabled() &&
       mURI->SchemeIs("https") && !(mLoadFlags & LOAD_ANONYMOUS) &&
       !mPrivateBrowsing) {
@@ -470,58 +454,6 @@ nsresult nsHttpChannel::PrepareToConnect() {
     }
   }
 #endif
-
-#ifdef XP_MACOSX
-
-  auto isUriMSAuthority = [&]() {
-    nsAutoCString endPoint;
-    nsresult rv = mURI->GetHost(endPoint);
-    if (!NS_SUCCEEDED(rv)) {
-      return false;
-    }
-    LOG(("endPoint is %s\n", endPoint.get()));
-
-    return gHttpHandler->IsHostMSAuthority(endPoint);
-  };
-
-  // If macOS SSO is enabled, we potentially add auth
-  // information to secure top level loads (DOCUMENTs) and iframes
-  // (SUBDOCUMENTs) that aren't anonymous or private browsing.
-  if (StaticPrefs::network_http_microsoft_entra_sso_enabled() &&
-      mURI->SchemeIs("https") && !(mLoadFlags & LOAD_ANONYMOUS) &&
-      !mPrivateBrowsing) {
-    ExtContentPolicyType type = mLoadInfo->GetExternalContentPolicyType();
-    nsAutoCString query;
-    nsresult rv = mURI->GetQuery(query);
-    if ((type == ExtContentPolicy::TYPE_DOCUMENT ||
-         type == ExtContentPolicy::TYPE_SUBDOCUMENT) &&
-        NS_SUCCEEDED(rv) && !query.IsEmpty() &&
-        prefEnabledForCurrentContainer() && isUriMSAuthority()) {
-            nsMainThreadPtrHandle<nsHttpChannel> self(
-          new nsMainThreadPtrHolder<nsHttpChannel>(
-              "nsHttpChannel::PrepareToConnect::self", this));
-      auto resultCallback = [self(self)]() {
-        MOZ_ASSERT(NS_IsMainThread());
-        nsresult rv = self->ContinuePrepareToConnect();
-        if (NS_FAILED(rv)) {
-          self->CloseCacheEntry(false);
-          Unused << self->AsyncAbort(rv);
-        }
-      };
-      rv = AddMicrosoftEntraSSO(this, std::move(resultCallback));
-      // Returns NS_OK if performRequests is called in MicrosoftEntraSSOUtils
-      // This temporarily stops the channel setup for the delegate.
-      if (NS_SUCCEEDED(rv)) {
-        return rv;
-      }
-    }
-  }
-
-#endif
-
-  return ContinuePrepareToConnect();
-}
-nsresult nsHttpChannel::ContinuePrepareToConnect() {
 
   // notify "http-on-modify-request" observers
   CallOnModifyRequestObservers();

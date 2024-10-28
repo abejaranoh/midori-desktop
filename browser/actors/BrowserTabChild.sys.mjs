@@ -13,7 +13,6 @@ export class BrowserTabChild extends JSWindowActorChild {
     let docShell = context.docShell;
 
     switch (message.name) {
-
       case "ForceEncodingDetection":
         docShell.forceEncodingDetection();
         break;
