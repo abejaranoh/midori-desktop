@@ -628,14 +628,14 @@ export class TopSitesFeed {
           "id": 4,
           "name": "Stake US",
           "url": "https://stake.us/?c=L0OhuV83",
-          "image_url": "https://astian.org/wp-content/uploads/2024/10/Untitled-200-x-200-px.png",
+          "image_url": "https://astian.org/wp-content/uploads/2024/10/stakeus.png",
           "image_size": 200,
         },
         {
           "id": 5,
           "name": "Stake",
           "url": "https://stake.com/?c=L0OhuV83",
-          "image_url": "https://astian.org/wp-content/uploads/2024/10/Untitled-design-42.png",
+          "image_url": "https://astian.org/wp-content/uploads/2024/10/stakecom.png",
           "image_size": 200,
         },
         {
