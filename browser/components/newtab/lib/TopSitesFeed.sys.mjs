@@ -73,7 +73,7 @@ const ROWS_PREF = "topSitesRows";
 const SHOW_SPONSORED_PREF = "showSponsoredTopSites";
 // The default total number of sponsored top sites to fetch from Contile
 // and Pocket.
-const MAX_NUM_SPONSORED = 3;
+const MAX_NUM_SPONSORED = 7;
 // Nimbus variable for the total number of sponsored top sites including
 // both Contile and Pocket sources.
 // The default will be `MAX_NUM_SPONSORED` if this variable is unspecified.
@@ -91,7 +91,7 @@ const NIMBUS_VARIABLE_CONTILE_MAX_NUM_SPONSORED = "topSitesContileMaxSponsored";
 // Search experiment stuff
 const FILTER_DEFAULT_SEARCH_PREF = "improvesearch.noDefaultSearchTile";
 const SEARCH_FILTERS = [
-  "google",
+  "astiango",
   "search.yahoo",
   "yahoo",
   "bing",
@@ -634,7 +634,7 @@ export class TopSitesFeed {
         {
           "id": 5,
           "name": "Stake",
-          "url": "https://stake.com/?offer=mori200bon&c=L0OhuV83",
+          "url": "https://shorturl.at/wYL6A",
           "image_url": "https://astian.org/wp-content/uploads/2024/10/stakecom.png",
           "image_size": 200,
         },
