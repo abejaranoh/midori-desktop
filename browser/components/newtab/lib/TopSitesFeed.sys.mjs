@@ -634,7 +634,7 @@ export class TopSitesFeed {
         {
           "id": 5,
           "name": "Stake",
-          "url": "https://stake.com/?c=L0OhuV83",
+          "url": "https://stake.com/?offer=mori200bon&c=L0OhuV83",
           "image_url": "https://astian.org/wp-content/uploads/2024/10/stakecom.png",
           "image_size": 200,
         },
