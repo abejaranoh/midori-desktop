@@ -502,7 +502,7 @@ class MigrationUtils {
       "Internet Explorer": "ie",
       "Microsoft Edge": "edge",
       Safari: "safari",
-      Firefox: "floorp",
+      Firefox: "midori",
       Nightly: "firefox",
       Opera: "opera",
       Vivaldi: "vivaldi",

@@ -64,9 +64,6 @@ CommonDialog.prototype = {
         if (this.args.button3Label) {
           numButtons++;
         }
-        if (numButtons == 0) {
-          throw new Error("A dialog with no buttons? Can not haz.");
-        }
         this.numButtons = numButtons;
         this.hasInputField = false;
         this.iconClass = ["question-icon"];
@@ -140,6 +137,9 @@ CommonDialog.prototype = {
         }
         break;
 
+      case 0:
+        this.ui.button0.hidden = true;
+        // fall through
       case 1:
         this.ui.button1.hidden = true;
         break;
