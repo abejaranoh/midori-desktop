@@ -2037,6 +2037,8 @@ mozilla::ipc::IPCResult BrowserChild::RecvStoreDropTargetAndDelayEndDragSession(
     mDelayedDropPoint = queryEvent.mRefPoint;
     dragSession->StoreDropTargetAndDelayEndDragSession(
         queryEvent.mReply->mDropElement, queryEvent.mReply->mDropFrame);
+    } else {
+    MOZ_ASSERT(false, "Didn't get reply from eQueryDropTargetHittest event!");
   }
   return IPC_OK();
 }
