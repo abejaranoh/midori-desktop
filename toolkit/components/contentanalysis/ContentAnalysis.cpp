@@ -2308,6 +2308,7 @@ ContentAnalysis::GetDiagnosticInfo(JSContext* aCx,
   if (!windowGlobal) {
     return nullptr;
   }
+  dom::CanonicalBrowsingContext* oldBrowsingContext = aBrowsingContext;
   nsIPrincipal* principal = windowGlobal->DocumentPrincipal();
   dom::CanonicalBrowsingContext* curBrowsingContext =
       aBrowsingContext->GetParent();
