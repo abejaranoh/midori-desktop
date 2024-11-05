@@ -428,7 +428,9 @@ bool WidgetEvent::WillBeSentToRemoteProcess() const {
       nsIContent::FromEventTarget(mOriginalTarget));
 }
 
-bool WidgetEvent::IsIMERelatedEvent() const {
+  return HasIMEEventMessage() ||
+         (IsQueryContentEvent() && mMessage != eQueryDropTargetHittest) ||
+         IsSelectionEvent();
   return HasIMEEventMessage() || IsQueryContentEvent() || IsSelectionEvent();
 }
 
