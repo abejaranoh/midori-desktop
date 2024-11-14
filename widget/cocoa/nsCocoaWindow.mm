@@ -123,6 +123,7 @@ nsCocoaWindow::nsCocoaWindow()
     : mParent(nullptr),
       mAncestorLink(nullptr),
       mWindow(nil),
+      mClosedRetainedWindow(nil),
       mDelegate(nil),
       mPopupContentView(nil),
       mFullscreenTransitionAnimation(nil),
@@ -168,11 +169,12 @@ void nsCocoaWindow::DestroyNativeWindow() {
   // We want to unhook the delegate here because we don't want events
   // sent to it after this object has been destroyed.
   mWindow.delegate = nil;
-    // We might be in an embedded run loop which is still using mWindow.
-  // Hold an extra reference as an autorelease to cover these cases.
-  [[mWindow retain] autorelease];
-  // Closing the window will also release it, though our extra retain
-  // above will keep it alive through the event loop.
+  // Closing the window will also release it. Our second reference will
+  // keep it alive through our destructor. Release any reference we might
+  // have from an earlier call to DestroyNativeWindow, then create a new
+  // one.
+  [mClosedRetainedWindow autorelease];
+  mClosedRetainedWindow = [mWindow retain];
   MOZ_ASSERT(mWindow.releasedWhenClosed);
   [mWindow close];
 
@@ -208,6 +210,8 @@ nsCocoaWindow::~nsCocoaWindow() {
     CancelAllTransitions();
     DestroyNativeWindow();
   }
+
+  [mClosedRetainedWindow release];
 
   NS_IF_RELEASE(mPopupContentView);
   NS_OBJC_END_TRY_IGNORE_BLOCK;
@@ -1298,10 +1302,11 @@ void nsCocoaWindow::HideWindowChrome(bool aShouldHide) {
 
   // Recreate the window with the right border style.
   NSRect frameRect = mWindow.frame;
+  BOOL restorable = mWindow.restorable;
   DestroyNativeWindow();
   nsresult rv = CreateNativeWindow(
       frameRect, aShouldHide ? BorderStyle::None : mBorderStyle, true,
-      mWindow.restorable);
+      restorable);
   NS_ENSURE_SUCCESS_VOID(rv);
 
   // Re-import state.
