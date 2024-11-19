@@ -1971,8 +1971,8 @@ pref("identity.sendtabpromo.url", "https://support.mozilla.org/1/firefox/%VERSIO
 
 // URLs for promo links to mobile browsers. Note that consumers are expected to
 // append a value for utm_campaign.
-pref("identity.mobilepromo.android", "https://www.mozilla.org/firefox/android/?utm_source=firefox-browser&utm_medium=firefox-browser&utm_campaign=");
-pref("identity.mobilepromo.ios", "https://www.mozilla.org/firefox/ios/?utm_source=firefox-browser&utm_medium=firefox-browser&utm_campaign=");
+pref("identity.mobilepromo.android", "https://astian.org/midori-browser/android/?mtm_campaign=Midori-Desktop");
+pref("identity.mobilepromo.ios", "https://astian.org/midori-browser/ios?mtm_campaign=midori-desktop");
 
 // Migrate any existing Firefox Account data from the default profile to the
 // Developer Edition profile.
