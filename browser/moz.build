@@ -41,7 +41,6 @@ export("DIST_SUBDIR")
 
 # These defines are read in firefox.js
 DEFINES["APP_VERSION"] = CONFIG["MOZ_APP_VERSION"]
-DEFINES["APP_VERSION_DISPLAY"] = CONFIG["MOZ_APP_VERSION_DISPLAY"]
 
 for cdm in CONFIG["MOZ_EME_MODULES"]:
     DEFINES["MOZ_%s_EME" % cdm.upper()] = True
