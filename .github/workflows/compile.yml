@@ -20,8 +20,8 @@ jobs:
 
       - name: Configure and build Midori
         run: |
-          cd midori
-          mkdir build
+          #cd midori
+          #mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
           ninja
